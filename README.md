@@ -4,6 +4,7 @@ Gleeman is a toy static blog generator that aims to be a simple way to tell tale
 
 ## Quick Start
 
+### Install
 To get started, run `gleeman init`. This will instantiate your blog skeleton. The directory structure looks like this:
 
 ```
@@ -19,7 +20,17 @@ myblog/
         settings.yaml
 ```
 
-### Customizing your Blog
+### Create a Blog Post
+
+Create a new Markdown file in the `tales/entries/` directory. The filename can be whatever you want, but we suggest using the slug of the title of your post. For example, a blog post titled "My 5 Favorite Dogs" might have a filename of `my-five-favorite-dogs.md`. 
+
+Write your blog post using Markdown.
+
+### Build the Blog Post
+
+Once your Markdown file is created, simply run `gleeman build` and it will generate the HTML for the site.
+
+## Customizing your Blog
 
 The two files used for customization are `main.css` for styling and `_layout.html` for the layout. 
 
@@ -37,4 +48,5 @@ Another option is `base_url`, if you want to define the location of this app. No
 
 * Generate an index page with a preview of all of the blog posts
 * Switch to use `html/template` in Go
+* Create a webserver to serve up this stuff for development
 * actually write blog posts
