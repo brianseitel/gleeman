@@ -5,7 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/brianseitel/gleeman/internal/builder"
@@ -47,6 +47,6 @@ func init() {
 	viper.AddConfigPath(".")        // optionally look for config in the working directory
 	err := viper.ReadInConfig()     // Find and read the config file
 	if err != nil {                 // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+		log.Println("Error loading settings file. Please run `gleeman init`.")
 	}
 }

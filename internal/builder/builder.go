@@ -10,6 +10,7 @@ import (
 	"github.com/avelino/slugify"
 	"github.com/olebedev/config"
 	"github.com/russross/blackfriday"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -18,17 +19,21 @@ type Builder struct {
 }
 
 func (b *Builder) Start(settings map[string]string) error {
-	// TODO: make this a relative path
-	files, err := filepath.Glob("/Users/brianseitel/Code/go/src/github.com/brianseitel/gleeman/tales/entries/*.md")
+	path := getCurrentPath()
+	entryPath := path + "/tales/entries/*.md"
+	b.Logger.Sugar().Infof("Globbing entries from %s", entryPath)
+	files, err := filepath.Glob(entryPath)
 	if err != nil {
 		b.Logger.Sugar().Error(err)
 		return err
 	}
 
-	layoutFile, _ := ioutil.ReadFile("/Users/brianseitel/Code/go/src/github.com/brianseitel/gleeman/tales/layout/_layout.html")
-
+	layoutPath := path + "/tales/layout/_layout.html"
+	b.Logger.Sugar().Infof("Loading layouts from %s", layoutPath)
+	layoutFile, _ := ioutil.ReadFile(layoutPath)
 	layout := string(layoutFile)
 
+	b.Logger.Sugar().Infof("Populating layout with settings...")
 	for setting, value := range settings {
 		layout = strings.ReplaceAll(layout, fmt.Sprintf(`{{ .%s }}`, setting), value)
 	}
@@ -47,7 +52,9 @@ func (b *Builder) Start(settings map[string]string) error {
 
 		entry = strings.Replace(entry, `{{ .post }}`, string(output), 1)
 
-		f, _ := os.Create(fmt.Sprintf("./public/%s.html", slugify.Slugify(entryDetails["title"])))
+		destPath := fmt.Sprintf(path+"/public/%s.html", slugify.Slugify(entryDetails["title"]))
+		b.Logger.Sugar().Infof("Saving entry to %s", destPath)
+		f, _ := os.Create(destPath)
 		f.Write([]byte(entry))
 		f.Close()
 	}
@@ -79,4 +86,17 @@ func parseDetails(entry string) (map[string]string, string) {
 	}
 
 	return details, entry
+}
+
+func getCurrentPath() string {
+	if path := viper.GetString("base_path"); path != "" {
+		return path
+	}
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+
+	return exPath
 }
