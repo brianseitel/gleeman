@@ -32,3 +32,9 @@ The `_layouts.html` file contains the header, footer, and body of the blog. You 
 The `settings.yaml` file contains only one required field at the moment, and that is `name`, which should be the name of your blog. By default, this is displayed in the `<title>` tags and at the top of your blog page.
 
 Another option is `base_url`, if you want to define the location of this app. Normally, this is not needed, but if your files are being generated in the wrong place, setting this to the path of the gleeman executable this may resolve the issue.
+
+### Wish List
+
+* Generate an index page with a preview of all of the blog posts
+* Switch to use `html/template` in Go
+* actually write blog posts
