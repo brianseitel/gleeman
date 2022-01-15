@@ -32,11 +32,10 @@ Once your Markdown file is created, simply run `gleeman build` and it will gener
 
 ## Customizing your Blog
 
-The two files used for customization are `main.css` for styling and `_layout.html` for the layout. 
+Update the following files to customize your blog:
 
-The `main.css` file is a minified theme that you can use. Feel free to customize it as much or as little as you want.
-
-The `_layouts.html` file contains the header, footer, and body of the blog. You can customize this if you want.
+* `_entry.html` - represents the template for your blog entry.
+* `_main.html` - represents the main (index) page of your blog.
 
 ### Settings
 
@@ -46,7 +45,4 @@ Another option is `base_url`, if you want to define the location of this app. No
 
 ### Wish List
 
-* Generate an index page with a preview of all of the blog posts
-* Switch to use `html/template` in Go
-* Create a webserver to serve up this stuff for development
 * actually write blog posts

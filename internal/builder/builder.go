@@ -2,10 +2,12 @@ package builder
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/avelino/slugify"
 	"github.com/olebedev/config"
@@ -18,6 +20,24 @@ type Builder struct {
 	Logger *zap.Logger
 }
 
+type PageData struct {
+	Name      string
+	Post      string
+	Entries   []EntryData
+	Now       string
+	Copyright string
+}
+
+type EntryData struct {
+	Name      string
+	Title     string
+	Author    string
+	Date      string
+	Post      template.HTML
+	Now       string
+	Copyright string
+}
+
 func (b *Builder) Start(settings map[string]string) error {
 	path := getCurrentPath()
 	entryPath := path + "/tales/entries/*.md"
@@ -28,37 +48,68 @@ func (b *Builder) Start(settings map[string]string) error {
 		return err
 	}
 
-	layoutPath := path + "/tales/layout/_layout.html"
-	b.Logger.Sugar().Infof("Loading layouts from %s", layoutPath)
-	layoutFile, _ := ioutil.ReadFile(layoutPath)
-	layout := string(layoutFile)
+	indexTemplatePath := path + "/tales/layout/_main.html"
+	entryTemplatePath := path + "/tales/layout/_entry.html"
+	b.Logger.Sugar().Infof("Loading layouts from %s", entryTemplatePath)
 
-	b.Logger.Sugar().Infof("Populating layout with settings...")
-	for setting, value := range settings {
-		layout = strings.ReplaceAll(layout, fmt.Sprintf(`{{ .%s }}`, setting), value)
+	indexData := PageData{
+		Name:      settings["name"],
+		Now:       time.Now().Format(time.RFC3339),
+		Copyright: time.Now().Format("2006"),
 	}
 
 	for _, file := range files {
+		entryTemplate := template.Must(template.ParseFiles(entryTemplatePath))
+
 		input, _ := ioutil.ReadFile(file)
 		entryDetails, post := parseDetails(string(input))
 		output := blackfriday.MarkdownBasic([]byte(post))
 
-		entry := layout
-
-		for key, value := range entryDetails {
-			entry = strings.Replace(entry, fmt.Sprintf(`{{ .%s }}`, key), value, -1)
-			post = strings.Replace(post, fmt.Sprintf(`{{ .%s }}`, key), value, 1)
+		entryData := EntryData{
+			Name:      settings["name"],
+			Title:     entryDetails["title"],
+			Author:    entryDetails["author"],
+			Date:      entryDetails["date"],
+			Post:      template.HTML(trim(string(output), 200)),
+			Now:       time.Now().Format(time.RFC3339),
+			Copyright: time.Now().Format("2006"),
 		}
 
-		entry = strings.Replace(entry, `{{ .post }}`, string(output), 1)
+		indexData.Entries = append(indexData.Entries, entryData)
 
 		destPath := fmt.Sprintf(path+"/public/%s.html", slugify.Slugify(entryDetails["title"]))
 		b.Logger.Sugar().Infof("Saving entry to %s", destPath)
 		f, _ := os.Create(destPath)
-		f.Write([]byte(entry))
+		err = entryTemplate.Execute(f, entryData)
+		if err != nil {
+			panic(err)
+		}
 		f.Close()
 	}
+
+	indexTemplate := template.Must(template.ParseFiles(indexTemplatePath))
+
+	indexPath := fmt.Sprintf(path + "/public/index.html")
+	b.Logger.Sugar().Infof("Creating index file... %s", indexPath)
+	f, _ := os.Create(indexPath)
+	err = indexTemplate.Execute(f, indexData)
+	if err != nil {
+		panic(err)
+	}
+	f.Close()
+
 	return nil
+}
+
+func trim(str string, length int) string {
+	if len(str) < length {
+		return str
+	}
+
+	idx := strings.LastIndex(str, " ")
+	str = str[:idx] + "..."
+
+	return str
 }
 
 func parseDetails(entry string) (map[string]string, string) {

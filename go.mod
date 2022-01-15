@@ -6,6 +6,7 @@ require (
 	github.com/avelino/slugify v0.0.0-20180501145920-855f152bd774
 	github.com/olebedev/config v0.0.0-20190528211619-364964f3a8e4
 	github.com/russross/blackfriday v1.6.0
+	github.com/sanity-io/litter v1.5.2
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
 	go.uber.org/zap v1.17.0

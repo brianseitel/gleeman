@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ .Title }} | {{ .name }}</title>
+    <title>{{ .Title }} | {{ .Name }}</title>
     <meta name="generator" content="Gleeman v1.0.0" />
     <meta property="og:title" content="{{ .Title }}" />
     <meta name="author" content="{{ .Author }}" />
@@ -22,45 +22,43 @@
 </head>
 
 <body>
-    <body>
-        <nav class="nav">
-            <div class="nav-container">
-                <a href="/">
-                    <h2 class="nav-title">{{ .Name }}</h2>
-                </a>
-                <!-- <ul>
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/">
+                <h2 class="nav-title">{{ .Name }}</h2>
+            </a>
+            <!-- <ul>
                     <li><a href="/tale/">Posts</a></li>
                     <li><a href="/tale/tags">Tags</a></li>
                     <li><a href="/tale/about">About</a></li>
                 </ul> -->
+        </div>
+    </nav>
+
+
+    <main>
+        <div class="post">
+            <div class="post-info">
+                <span>Written by</span>
+
+                {{ .Author }}
+                <br>
+                <span>on&nbsp;</span><time datetime="2017-03-29 00:00:00 +0000">{{ .Date }}</time>
+
             </div>
-        </nav>
 
+            <h1 class="post-title">{{ .Title }}</h1>
+            <div class="post-line"></div>
 
-        <main>
-            <div class="post">
-                <div class="post-info">
-                    <span>Written by</span>
+            {{ .Post }}
+        </div>
+    </main>
 
-                    {{ .Author }}
-                    <br>
-                    <span>on&nbsp;</span><time datetime="2017-03-29 00:00:00 +0000">{{ .Date }}</time>
-
-                </div>
-
-                <h1 class="post-title">{{ .Title }}</h1>
-                <div class="post-line"></div>
-
-                {{ .Post }}
-            </div>
-        </main>
-    </body>
-
-    <footer>
-        <span>
-            &copy; <time datetime="{{ .now }}">{{ .copyright }}</time> All rights reserved.
-        </span>
-    </footer>
+<footer>
+    <span>
+        &copy; <time datetime="{{ .Now }}">{{ .Copyright }}</time> All rights reserved.
+    </span>
+</footer>
 </body>
 
 </html>

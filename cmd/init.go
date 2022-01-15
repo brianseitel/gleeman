@@ -41,6 +41,8 @@ to quickly create a Cobra application.`,
 		files := []string{
 			"tales/settings.yaml",
 			"tales/layout/_layout.html",
+			"tales/layout/_entry.html",
+			"tales/layout/_main.html",
 			"public/assets/main.css",
 		}
 
